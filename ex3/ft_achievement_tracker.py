@@ -1,82 +1,86 @@
 #!/usr/bin/env python3
 
+class AchTrackerSystem:
 
-class AchievementTrackerSystem:
+    unique_achs = set()
+    common_achs = set()
+    rare_achs = set()
+    all_players = []
 
-
-    unique_achievements = set()
-    common_achievements = set()
-    rare_achievements = set()
-    all_players = set()
-
-
-    def __init__(self, name, achievements):
+    def __init__(self, name, achs):
         self.name = name
-        self.achievements = achievements
-
-    @staticmethod
-    def add_player(self):
-
-        AchievementTrackerSystem.all_players.add(self)
+        self.achs = achs
 
     @classmethod
-    def set_achievements(cls) -> None:
+    def add_player(cls, player):
+
+        cls.all_players.append(player)
+
+    @classmethod
+    def set_achs(cls) -> None:
 
         print("=== Achievement Tracker System ===\n")
         for player in cls.all_players:
-            print(f"Player {player.name} achievements:", player.achievements)
+            print(f"Player {player.name} achievement:", player.achs)
 
     @classmethod
-    def unique_achievement(cls):
+    def unique_ach(cls):
 
         print("=== Achievement Analytics ===")
         for player in cls.all_players:
-            if not cls.unique_achievements:
-                cls.unique_achievements = player.achievements
-            else:
-                cls.unique_achievements = cls.unique_achievements.union(player.achievements)
-        print("All unique achievements:", cls.unique_achievements)
-        print("Total unique achievements:", len(cls.unique_achievements))
-    
+            cls.unique_achs |= player.achs
+        print("All unique achievements:", cls.unique_achs)
+        print("Total unique achievements:", len(cls.unique_achs))
+
     @classmethod
-    def common_achievement(cls):
+    def common_ach(cls):
 
         for player in cls.all_players:
-            if not cls.common_achievements:
-                cls.common_achievements = player.achievements
+            if not cls.common_achs:
+                cls.common_achs = player.achs
             else:
-                cls.common_achievements = cls.common_achievements.intersection(player.achievements)
-        print("Common to all players:", cls.common_achievements)
+                cls.common_achs = cls.common_achs.intersection(player.achs)
+        print("Common to all players:", cls.common_achs)
 
     @classmethod
-    def rare_achievement(cls):
-        for achievement in cls.unique_achievements:
+    def rare_ach(cls):
+        for achievement in cls.unique_achs:
             count = 0
             for player in cls.all_players:
-                for ach in player.achievements:
+                for ach in player.achs:
                     if ach == achievement:
                         count += 1
             if count == 1:
-                cls.rare_achievements.add(achievement)
-        print("Rare achievements (1 player):", cls.rare_achievements)
+                cls.rare_achs.add(achievement)
+        print("Rare achievements (1 player):", cls.rare_achs)
 
-        
+    @staticmethod
+    def compare_players(player1, player2):
+        common = player1.achs.intersection(player2.achs)
+        player1_unique = player1.achs.difference(player2.achs)
+        player2_unique = player2.achs.difference(player1.achs)
+        print(f"{player1.name} vs {player2.name} common:", common)
+        print(f"{player1.name} unique:", player1_unique)
+        print(f"{player2.name} unique:", player2_unique)
+
 
 if __name__ == "__main__":
 
-    alice = AchievementTrackerSystem("alice", {'first_kill', 'level_10', 
-                                   'treasure_hunter', 'speed_demon'})
-    bob = AchievementTrackerSystem("bob", {'first_kill', 'level_10', 
-                             'boss_slayer', 'collector'})
-    charlie = AchievementTrackerSystem("charlie", {'level_10', 'treasure_hunter',
-                            'boss_slayer', 'speed_demon', 'perfectionist'})
-    AchievementTrackerSystem.add_player(alice)
-    AchievementTrackerSystem.add_player(bob)
-    AchievementTrackerSystem.add_player(charlie)
-    AchievementTrackerSystem.set_achievements()
+    alice = AchTrackerSystem("Alice", {'first_kill', 'level_10',
+                                       'treasure_hunter', 'speed_demon'})
+    bob = AchTrackerSystem("Bob", {'first_kill', 'level_10',
+                                   'boss_slayer', 'collector'})
+    charlie = AchTrackerSystem("Charlie", {'level_10', 'treasure_hunter',
+                                           'boss_slayer', 'speed_demon',
+                                           'perfectionist'})
+    AchTrackerSystem.add_player(alice)
+    AchTrackerSystem.add_player(bob)
+    AchTrackerSystem.add_player(charlie)
+    AchTrackerSystem.set_achs()
     print("")
-    AchievementTrackerSystem.unique_achievement()
+    AchTrackerSystem.unique_ach()
     print("")
-    AchievementTrackerSystem.common_achievement()
+    AchTrackerSystem.common_ach()
+    AchTrackerSystem.rare_ach()
     print("")
-    AchievementTrackerSystem.rare_achievement()
+    AchTrackerSystem.compare_players(alice, bob)
