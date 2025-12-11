@@ -107,6 +107,7 @@ def inventory_analytics(inventories: dict) -> None:
             print(", ", end="")
         print(name)
         print("", end="")
+        first = False
 
 
 def main():
