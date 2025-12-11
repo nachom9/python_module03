@@ -7,14 +7,15 @@ class AchTrackerSystem:
     rare_achs = set()
     all_players = []
 
+
     def __init__(self, name, achs):
         self.name = name
         self.achs = achs
 
     @classmethod
-    def add_player(cls, player):
+    def create_list_player(cls, players: list):
 
-        cls.all_players.append(player)
+        cls.all_players = players
 
     @classmethod
     def set_achs(cls) -> None:
@@ -64,7 +65,7 @@ class AchTrackerSystem:
         print(f"{player2.name} unique:", player2_unique)
 
 
-if __name__ == "__main__":
+def main():
 
     alice = AchTrackerSystem("Alice", {'first_kill', 'level_10',
                                        'treasure_hunter', 'speed_demon'})
@@ -73,9 +74,7 @@ if __name__ == "__main__":
     charlie = AchTrackerSystem("Charlie", {'level_10', 'treasure_hunter',
                                            'boss_slayer', 'speed_demon',
                                            'perfectionist'})
-    AchTrackerSystem.add_player(alice)
-    AchTrackerSystem.add_player(bob)
-    AchTrackerSystem.add_player(charlie)
+    AchTrackerSystem.create_list_player([alice, bob, charlie])
     AchTrackerSystem.set_achs()
     print("")
     AchTrackerSystem.unique_ach()
@@ -84,3 +83,8 @@ if __name__ == "__main__":
     AchTrackerSystem.rare_ach()
     print("")
     AchTrackerSystem.compare_players(alice, bob)
+
+
+if __name__ == "__main__":
+
+    main()
