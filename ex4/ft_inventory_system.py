@@ -4,7 +4,8 @@ def show_inventory(inventory: dict):
 
     for name, data in inventory.items():
         print(f"{name} ({data['item']}, {data['rarity']}): {data['amount']}"
-              f" @ {data['cost']} gold each = {data['amount'] * data['cost']} gold")
+              f" @ {data['cost']} gold each = {data['amount'] * data['cost']}"
+              f" gold")
 
     total_value = 0
     total_items = 0
@@ -39,7 +40,8 @@ def transaction(inventories: dict, gives: str, recieves: str, item_given: str,
 
     try:
         if inventories[gives][item_given]['amount'] < number:
-            print(f"Error. Can't give {number} {item_given} to {recieves}, {gives}" 
+            print(f"Error. Can't give {number} {item_given} to {recieves},"
+                  f" {gives}"
                   f" has only {inventories[gives][item_given]['amount']}")
             return
     except KeyError:
@@ -48,13 +50,13 @@ def transaction(inventories: dict, gives: str, recieves: str, item_given: str,
 
     for name, data in inventories[recieves].items():
         if name == item_given:
-                new_data = dict(data)
-                new_data['amount'] += number
-                new_inventories[recieves][name] = new_data
-                has_item = True
+            new_data = dict(data)
+            new_data['amount'] += number
+            new_inventories[recieves][name] = new_data
+            has_item = True
         else:
             new_inventories[recieves][name] = dict(data)
-    if has_item == False:
+    if has_item is False:
         new_inventories[recieves][item_given] = inventories[gives][item_given]
         new_inventories[recieves][item_given]['amount'] = number
 
@@ -66,7 +68,7 @@ def transaction(inventories: dict, gives: str, recieves: str, item_given: str,
                 new_inventories[gives][name] = new_data
         else:
             new_inventories[gives][name] = dict(data)
- 
+
     return new_inventories
 
 
@@ -98,7 +100,7 @@ def inventory_analytics(inventories: dict) -> None:
 
     print(f"Most items: {saved_name} ({max_items} items)")
 
-    print(f"Rarest items:", end=" ")
+    print("Rarest items:", end=" ")
     first = True
     for name in rarest_items.keys():
         if not first:
@@ -167,7 +169,7 @@ def main():
     if new_inventories:
         inventories.update(new_inventories)
         print("Transaction successful!")
-        print(f"\n=== Updated Inventories ===")
+        print("\n=== Updated Inventories ===")
         try:
             print(f"Alice potions: {inventories['Alice']['potion']['amount']}")
         except KeyError:
@@ -179,6 +181,7 @@ def main():
 
     print("=== Inventory Analytics ===")
     inventory_analytics(inventories)
+
 
 if __name__ == "__main__":
     main()
