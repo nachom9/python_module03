@@ -45,9 +45,9 @@ def transaction(inventory1: dict, inventory2: dict, item: str, number: int):
                 new_data['amount'] -= number
                 new_inventory[name] = new_data
         else:
-            new_inventory[name] = dict(data)
+            new_inventory[name] = data
 
-    inventory1.update(new_inventory)
+    return new_inventory
                 
 
 def main():
@@ -94,9 +94,8 @@ def main():
     show_inventory(alice_inventory)
     print("")
     print("=== Transaction: Alice gives Bob 2 potions ===")
-    transaction(alice_inventory, bob_inventory, "potion", 5)
-    show_inventory(alice_inventory)
-
+    alice_inventory = transaction(alice_inventory, bob_inventory, "potion", 5)
+    print(alice_inventory)
 
 if __name__ == "__main__":
     main()
