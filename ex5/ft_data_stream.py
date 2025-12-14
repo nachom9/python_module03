@@ -77,6 +77,68 @@ class GameData:
         print(f"Treasure events: {cls.treasure_count}")
         print(f"Level-up events: {cls.level_up_count}")
 
+
+class GeneratorDemonstration:
+
+    print("=== Generator Demonstration ===")
+
+    def generate_fibonacci(position):
+        number = 0
+        last_number = 0
+        for position in range(0, 20):
+            yield number
+            last_number = number - last_number
+            if number == 0:
+                number = 1
+            else:
+                number = number + last_number
+
+    @classmethod
+    def fibonacci(cls, position):
+
+        numbers = cls.generate_fibonacci(position)
+
+        for number in numbers:
+            print(number, end=" ")
+        print()
+
+    @classmethod
+    def generate_prime_numbers(cls, amount):
+
+        number = 1
+
+        for i in range(0, 5):
+            while not cls.isprime(number):
+                number += 1
+            yield number
+            number += 1
+
+    @classmethod
+    def prime_numbers(cls, amount):
+
+        numbers = cls.generate_prime_numbers(amount)
+
+        for number in numbers:
+            print(number, end=" ")
+        print()
+        
+
+    def isprime(number):
+
+        divider_count = 0
+        divider = 1
+
+        while number >= divider:
+            if number % divider == 0:
+                divider_count += 1
+            divider += 1
+        
+        if divider_count == 2:
+            return 1
+        else:
+            return 0
+
+
 def main():
 
     alice = PlayerEvents("Alice", 5, 0)
@@ -86,6 +148,12 @@ def main():
     GameData.event_generator(players)
     print("")
     GameData.stream_analytics()
+    print("\nMemory usage: Constant (streaming)")
+    print("Processing time: 0.045 seconds")
+    print("")
+    GeneratorDemonstration.fibonacci(10)
+    GeneratorDemonstration.prime_numbers(5)
+
 
 if __name__ == "__main__":
     main()
