@@ -9,18 +9,18 @@ class PlayerEvents:
 
     def kill(self):
         event = (f"Event 1: Player {self.name} (level {self.level}) killed"
-        f" a monster")
+                 f" a monster")
         return event
 
     def treasure(self):
         event = (f"Event 2: Player {self.name} (level {self.level}) found"
-        f" treasure")
+                 f" treasure")
         self.gold += 25
         return event
 
     def level_up(self):
         event = (f"Event 3: Player {self.name} (level {self.level}) leveled"
-        f" up")
+                 f" up")
         self.level += 1
         return event
 
@@ -57,7 +57,6 @@ class GameData:
             cls.event_count += 1
             yield event
 
-
     @classmethod
     def event_generator(cls, players):
 
@@ -66,7 +65,7 @@ class GameData:
         processed = cls.event_creator(players)
 
         for event in processed:
-            print (event)
+            print(event)
 
     @classmethod
     def stream_analytics(cls):
@@ -80,12 +79,13 @@ class GameData:
 
 class GeneratorDemonstration:
 
-    print("=== Generator Demonstration ===")
-
     def generate_fibonacci(position):
         number = 0
         last_number = 0
-        for position in range(0, 20):
+        for position in range(0, position):
+            if position == 2:
+                number = 1
+                last_number = 0
             yield number
             last_number = number - last_number
             if number == 0:
@@ -97,17 +97,18 @@ class GeneratorDemonstration:
     def fibonacci(cls, position):
 
         numbers = cls.generate_fibonacci(position)
-
-        for number in numbers:
-            print(number, end=" ")
-        print()
+        if position > 0:
+            print(f"Fibonacci sequence (first {position}):", end=" ")
+            for number in numbers:
+                print(number, end=" ")
+            print()
 
     @classmethod
     def generate_prime_numbers(cls, amount):
 
         number = 1
 
-        for i in range(0, 5):
+        for i in range(0, amount):
             while not cls.isprime(number):
                 number += 1
             yield number
@@ -117,11 +118,11 @@ class GeneratorDemonstration:
     def prime_numbers(cls, amount):
 
         numbers = cls.generate_prime_numbers(amount)
-
-        for number in numbers:
-            print(number, end=" ")
-        print()
-        
+        if amount > 0:
+            print(f"Prime numbers (first {amount}):", end=" ")
+            for number in numbers:
+                print(number, end=" ")
+            print()
 
     def isprime(number):
 
@@ -132,11 +133,11 @@ class GeneratorDemonstration:
             if number % divider == 0:
                 divider_count += 1
             divider += 1
-        
+
         if divider_count == 2:
-            return 1
+            return True
         else:
-            return 0
+            return False
 
 
 def main():
@@ -151,8 +152,9 @@ def main():
     print("\nMemory usage: Constant (streaming)")
     print("Processing time: 0.045 seconds")
     print("")
-    GeneratorDemonstration.fibonacci(10)
-    GeneratorDemonstration.prime_numbers(5)
+    print("=== Generator Demonstration ===")
+    GeneratorDemonstration.fibonacci(20)
+    GeneratorDemonstration.prime_numbers(20)
 
 
 if __name__ == "__main__":
