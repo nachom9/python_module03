@@ -1,187 +1,183 @@
 #!/usr/bin/env python3
 
-def show_inventory(inventory: dict):
+def get_data():
 
-    for name, data in inventory.items():
-        print(f"{name} ({data['item']}, {data['rarity']}): {data['amount']}"
-              f" @ {data['cost']} gold each = {data['amount'] * data['cost']}"
-              f" gold")
-
-    total_value = 0
-    total_items = 0
-    weapon_count = 0
-    consumable_count = 0
-    armor_count = 0
-
-    for value in inventory.values():
-        total_value += value['amount'] * value['cost']
-        total_items += value['amount']
-        if value['item'] == "weapon":
-            weapon_count += value['amount']
-        elif value['item'] == "consumable":
-            consumable_count += value['amount']
-        elif value['item'] == "armor":
-            armor_count += value['amount']
-
-    print(f"\nInventory value: {total_value} gold")
-    print(f"Item count: {total_items} items")
-    print(f"Categories: weapon({weapon_count}), consumable({consumable_count})"
-          f", armor({armor_count})")
-
-
-def transaction(inventories: dict, gives: str, recieves: str, item_given: str,
-                number: int) -> dict:
-
-    has_item = False
-    new_inventories = {
-            "Alice": {},
-            "Bob": dict(inventories[recieves]),
+    data = {
+        'players': {
+            'alice': {
+                'items': {
+                    'pixel_sword': 1, 'code_bow': 1,
+                    'health_byte': 1, 'quantum_ring': 3
+                },
+                'total_value': 1875, 'item_count': 6
+            },
+            'bob': {
+                'items': {
+                    'code_bow': 3, 'pixel_sword': 2
+                },
+                'total_value': 900, 'item_count': 5
+            },
+            'charlie': {
+                'items': {
+                    'pixel_sword': 1, 'code_bow': 1
+                },
+                'total_value': 350, 'item_count': 2
+            },
+            'diana': {
+                'items': {
+                    'code_bow': 3, 'pixel_sword': 3,
+                    'health_byte': 3, 'data_crystal': 3
+                },
+                'total_value': 4125, 'item_count': 12
+                }
+        },
+        'catalog': {
+            'pixel_sword': {
+                'type': 'weapon', 'value': 150, 'rarity': 'common'
+            },
+            'quantum_ring': {
+                'type': 'accessory', 'value': 500, 'rarity': 'rare'
+            },
+            'health_byte': {
+                'type': 'consumable', 'value': 25, 'rarity': 'common'
+            },
+            'data_crystal': {
+                'type': 'material', 'value': 1000, 'rarity': 'legendary'
+            },
+            'code_bow': {
+                'type': 'weapon', 'value': 200, 'rarity': 'uncommon'
             }
+        }
+    }
 
-    try:
-        if inventories[gives][item_given]['amount'] < number:
-            print(f"Error. Can't give {number} {item_given} to {recieves},"
-                  f" {gives}"
-                  f" has only {inventories[gives][item_given]['amount']}")
+    return data
+
+
+class Inventory:
+
+    def show_inventory(data: dict, player: str):
+
+        categories = {}
+        print_categories = "Categories: "
+        players = data['players']
+        catalog = data['catalog']
+        inventory = players[player]['items']
+        for name, amount in inventory.items():
+            item_type = catalog[name]['type']
+            rarity = catalog[name]['rarity']
+            try:
+                categories[item_type] += amount
+            except KeyError:
+                categories[item_type] = amount
+            value = catalog[name]['value']
+            print(f"{name} ({item_type}, {rarity}): {amount}x @ {value} "
+                  f"gold each = {value * amount}")
+
+        print(f"\nInventory value: {players[player]['total_value']} gold")
+        print(f"Item count: {players[player]['item_count']} items")
+        for category, number in categories.items():
+            print_categories += f"{category}({number}), "
+        print(print_categories[:-2])
+
+    def transaction(data: dict, gives: str, recieves: str, amount: int,
+                    item: str):
+
+        players = data['players']
+        gives_has = players[gives]['items'].get(item, 0)
+        recieves_has = players[recieves]['items'].get(item, 0)
+        item_value = data['catalog'][item]['value']
+
+        if gives_has < amount:
+            print(f"Error. {gives} can't give {amount} {item}, they only "
+                  f"have {gives_has}")
             return
-    except KeyError:
-        print(f"Error. {gives} has no {item_given}")
-        return
+        if amount <= 0:
+            print("Error. Cant give 0 or less of an item")
+            return
 
-    for name, data in inventories[recieves].items():
-        if name == item_given:
-            new_data = dict(data)
-            new_data['amount'] += number
-            new_inventories[recieves][name] = new_data
-            has_item = True
-        else:
-            new_inventories[recieves][name] = dict(data)
-    if has_item is False:
-        new_inventories[recieves][item_given] = inventories[gives][item_given]
-        new_inventories[recieves][item_given]['amount'] = number
+        players[gives]['items'][item] -= amount
 
-    for name, data in inventories[gives].items():
-        if name == item_given:
-            if inventories[gives][item_given]['amount'] > number:
-                new_data = dict(data)
-                new_data['amount'] -= number
-                new_inventories[gives][name] = new_data
-        else:
-            new_inventories[gives][name] = dict(data)
+        if recieves_has == 0:
+            players[recieves]['items'][item] = amount
+        elif recieves_has > 0:
+            players[recieves]['items'][item] += amount
 
-    return new_inventories
+        new_inventory = {}
+        if players[gives]['items'].get(item, 0) == 0:
+            for name, data in players[gives]['items'].items():
+                if name != item:
+                    new_inventory[name] = data
+            players[gives]['items'] = new_inventory
 
+        players[gives]['total_value'] -= amount * item_value
+        players[recieves]['total_value'] += amount * item_value
+        players[gives]['item_count'] -= amount
+        players[recieves]['item_count'] += amount
 
-def inventory_analytics(inventories: dict) -> None:
+        if amount == 1:
+            print(f"=== Transaction: {gives} gives {recieves} {amount} "
+                  f"{item} ===")
+        if amount > 1:
+            print(f"=== Transaction: {gives} gives {recieves} {amount} "
+                  f"{item}s ===")
+        print("Transaction successful!")
 
-    max_items = 0
-    max_value = 0
-    saved_name = ""
-    rarest_items = {}
+        print("\n== Updated Inventories ===")
+        print(f"{gives} {item}: {players[gives]['items'].get(item, 0)}")
+        print(f"{recieves} {item}: {players[recieves]['items'].get(item, 0)}")
 
-    for player in inventories:
-        tmp_max_value = 0
-        for name, data in inventories[player].items():
-            tmp_max_value += data['cost'] * data['amount']
-            if data['rarity'] == "rare":
-                rarest_items[name] = dict(data)
-        if tmp_max_value > max_value:
-            max_value = tmp_max_value
-            saved_name = player
-    print(f"Most valuable player: {saved_name} ({max_value})")
+    def inventory_analytics(data: dict):
 
-    for player in inventories:
-        tmp_max_items = 0
-        for name, data in inventories[player].items():
-            tmp_max_items += data['amount']
-        if tmp_max_items > max_items:
-            max_items = tmp_max_items
-            saved_name = player
+        max_value = 0
+        players = data['players']
+        catalog = data['catalog']
 
-    print(f"Most items: {saved_name} ({max_items} items)")
+        categories_tier = {
+            'common': 1,
+            'uncommon': 2,
+            'rare': 3,
+            'legendary': 4
+        }
+        rarest_tier_count = 0
+        for player in players:
+            for item in players[player]['items']:
+                rarity = catalog[item]['rarity']
+                if categories_tier[rarity] > rarest_tier_count:
+                    rarest_tier_count = categories_tier[rarity]
+                    rarest_tier = rarity
 
-    print("Rarest items:", end=" ")
-    first = True
-    for name in rarest_items.keys():
-        if not first:
-            print(", ", end="")
-        print(name)
-        print("", end="")
-        first = False
+        for player in players:
+            if players[player]['total_value'] > max_value:
+                max_value = players[player]['total_value']
+                most_valuable = player
+        print(f"Most valuable player: {most_valuable} ({max_value} gold)")
+
+        max_items = 0
+        for player in players:
+            if players[player]['item_count'] > max_items:
+                max_items = players[player]['item_count']
+                most_items = player
+        print(f"Most items: {most_items} ({max_items} items)")
+
+        print_rarest_items = "rarest items: "
+        for player in players:
+            for item in players[player]['items']:
+                if catalog[item]['rarity'] == rarest_tier:
+                    print_rarest_items += f"{item}, "
+        print(print_rarest_items[:-2])
 
 
 def main():
 
+    data = get_data()
+
     print("=== Player Inventory System ===")
+    print("\n=== Alice's Inventory ===")
+    Inventory.show_inventory(data, 'alice')
     print("")
-
-    new_inventories = None
-    alice_inventory = {
-            "sword": {
-                "item": "weapon",
-                "rarity": "rare",
-                "amount": 1,
-                "cost": 500,
-                },
-            "potion": {
-                "item": "consumable",
-                "rarity": "common",
-                "amount": 2,
-                "cost": 50,
-                },
-            "shield": {
-                "item": "armor",
-                "rarity": "uncommon",
-                "amount": 1,
-                "cost": 200,
-                }
-            }
-
-    bob_inventory = {
-            "sword": {
-                "item": "weapon",
-                "rarity": "rare",
-                "amount": 1,
-                "cost": 500,
-                },
-            "potion": {
-                "item": "consumable",
-                "rarity": "common",
-                "amount": 2,
-                "cost": 50,
-                },
-            "shield": {
-                "item": "armor",
-                "rarity": "uncommon",
-                "amount": 1,
-                "cost": 200,
-                }
-            }
-    inventories = {
-            "Alice": alice_inventory,
-            "Bob": bob_inventory}
-
-    print("=== Alice's Inventory ===")
-    show_inventory(alice_inventory)
-    print("")
-
-    print("=== Transaction: Alice gives Bob 2 potions ===")
-    new_inventories = transaction(inventories, "Alice", "Bob", "potion", 2)
-    if new_inventories:
-        inventories.update(new_inventories)
-        print("Transaction successful!")
-        print("\n=== Updated Inventories ===")
-        try:
-            print(f"Alice potions: {inventories['Alice']['potion']['amount']}")
-        except KeyError:
-            print("Alice potions: 0")
-        print(f"Bob potions: {inventories['Bob']['potion']['amount']}")
-    else:
-        print("Transaction failed!")
-    print("")
-
-    print("=== Inventory Analytics ===")
-    inventory_analytics(inventories)
+    Inventory.transaction(data, 'alice', 'bob', 2, 'quantum_ring')
+    print("\n=== Updated Inventories ===")
+    Inventory.inventory_analytics(data)
 
 
 if __name__ == "__main__":
