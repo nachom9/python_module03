@@ -159,12 +159,20 @@ class Inventory:
                 most_items = player
         print(f"Most items: {most_items} ({max_items} items)")
 
-        print_rarest_items = "rarest items: "
+        rarest_items = {}
+        print("Rarest items:", end=" ")
         for player in players:
             for item in players[player]['items']:
                 if catalog[item]['rarity'] == rarest_tier:
-                    print_rarest_items += f"{item}, "
-        print(print_rarest_items[:-2])
+                    rarest_items[item] = True
+        count = 0
+        for item in rarest_items.keys():
+            count += 1
+            print(item, end='')
+            if count < len(rarest_items):
+                print(', ', end='')
+
+        print()
 
 
 def main():
