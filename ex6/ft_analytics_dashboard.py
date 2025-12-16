@@ -69,21 +69,21 @@ def get_data():
 class ListExamples:
 
     @staticmethod
-    def show_high_scorers(players: list):
+    def show_high_scorers(players: dict):
 
         high_scorers = [player for player in players if
                         players[player]['total_score'] > 2000]
         print(f"High scorers (>2000): {high_scorers}")
 
     @staticmethod
-    def show_double_scores(players: list):
+    def show_double_scores(players: dict):
 
         double_scores = [players[player]['total_score'] * 2
                          for player in players]
         print(f"Scores doubled: {double_scores}")
 
     @staticmethod
-    def show_active_players(players: list):
+    def show_active_players(players: dict):
 
         active_players = [player for player in players]
         print(f"Active players: {active_players}")
@@ -94,9 +94,8 @@ class DictExamples:
     @staticmethod
     def show_scores(players: dict):
 
-        scores = {}
-        for player in players:
-            scores[player] = players[player]['total_score']
+        scores = {player: players[player]['total_score']
+                  for player in players}
         print(f"Player scores: {scores}")
 
     @staticmethod
@@ -119,12 +118,10 @@ class DictExamples:
         print(f"Score categories: {categories}")
 
     @staticmethod
-    def show_achievements(players: list):
+    def show_achievements(players: dict):
 
-        achievement_count = 0
-        for player in players:
-            achievement_count += players[player]['achievements_count']
-
+        achievement_count = {player: players[player]['achievements_count']
+                             for player in players}
         print(f"Achievement counts: {achievement_count}")
 
 
@@ -132,7 +129,7 @@ class SetExamples:
 
     def show_unique_players(players):
 
-        unique_players = set(players)
+        unique_players = set(player for player in players)
         print(f"Unique players: {unique_players}")
 
     def show_unique_achievements(data):
@@ -144,9 +141,9 @@ class SetExamples:
 
     def show_gamemodes(data):
 
-        all_gamemodes = {gamemode
-                         for gamemode in data['game_modes']}
-        print(f"All gamemodes: {all_gamemodes}")
+        unique_gamemodes = {gamemode
+                            for gamemode in data['game_modes']}
+        print(f"Unique gamemodes: {unique_gamemodes}")
 
 
 class CombinedAnalysis:
