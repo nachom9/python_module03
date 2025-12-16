@@ -33,10 +33,10 @@ class GameData:
     event_count = 0
 
     @classmethod
-    def event_creator(cls, players):
+    def event_creator(cls, players, number_of_events):
 
         j = 0
-        for i in range(0, 1000):
+        for i in range(0, number_of_events):
             pj = players[j]
             if i % 7 == 0:
                 event = pj.level_up()
@@ -58,11 +58,11 @@ class GameData:
             yield event
 
     @classmethod
-    def event_generator(cls, players):
+    def event_generator(cls, players, number_of_events):
 
         print("=== Game Data Stream Processor ===\n")
-        print("Processing 1000 game events...\n")
-        processed = cls.event_creator(players)
+        print("Processing {number_of_events} game events...\n")
+        processed = cls.event_creator(players, number_of_events)
 
         for event in processed:
             print(event)

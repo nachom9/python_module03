@@ -6,7 +6,7 @@ import sys
 def show_scores(scores: list) -> None:
 
     print("Scores processed: [", end="")
-    print(*scores, sep = ", ", end="")
+    print(*scores, sep=", ", end="")
     print("]")
 
 
