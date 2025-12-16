@@ -1,33 +1,92 @@
 #!/usr/bin/env python3
 
+def get_data():
+
+    return {
+        'players': {
+            'alice': {
+                'level': 41,
+                'total_score': 2824,
+                'sessions_played': 13,
+                'favorite_mode': 'ranked',
+                'achievements_count': 5
+            },
+            'bob': {
+                'level': 16,
+                'total_score': 4657,
+                'sessions_played': 27,
+                'favorite_mode': 'ranked',
+                'achievements_count': 2
+            },
+            'charlie': {
+                'level': 44,
+                'total_score': 9935,
+                'sessions_played': 21,
+                'favorite_mode': 'ranked',
+                'achievements_count': 7
+            },
+            'diana': {
+                'level': 3,
+                'total_score': 1488,
+                'sessions_played': 21,
+                'favorite_mode': 'casual',
+                'achievements_count': 4
+            },
+            'eve': {
+                'level': 33,
+                'total_score': 1434,
+                'sessions_played': 81,
+                'favorite_mode': 'casual',
+                'achievements_count': 7
+            },
+            'frank': {
+                'level': 15,
+                'total_score': 8359,
+                'sessions_played': 85,
+                'favorite_mode': 'competitive',
+                'achievements_count': 1
+            }
+        },
+        'sessions': [
+            {'player': 'bob', 'duration_minutes': 94,
+             'score': 1831, 'mode': 'competitive', 'completed': False},
+            {'player': 'bob', 'duration_minutes': 32,
+             'score': 1478, 'mode': 'casual', 'completed': True},
+            {'player': 'diana', 'duration_minutes': 17,
+             'score': 1570, 'mode': 'competitive', 'completed': False},
+            {'player': 'alice', 'duration_minutes': 98,
+             'score': 1981, 'mode': 'ranked', 'completed': True},
+        ],
+        'game_modes': ['casual', 'competitive', 'ranked'],
+        'achievements': [
+            'first_blood', 'level_master', 'speed_runner',
+            'treasure_seeker', 'boss_hunter', 'pixel_perfect',
+            'combo_king', 'explorer'
+        ]
+    }
+
+
 class ListExamples:
 
     @staticmethod
     def show_high_scorers(players: list):
 
         high_scorers = [player for player in players if
-                        players[player]['score'] > 2000]
+                        players[player]['total_score'] > 2000]
         print(f"High scorers (>2000): {high_scorers}")
 
     @staticmethod
     def show_double_scores(players: list):
 
-        double_scores = [players[player]['score'] * 2 for player in players]
+        double_scores = [players[player]['total_score'] * 2
+                         for player in players]
         print(f"Scores doubled: {double_scores}")
 
     @staticmethod
     def show_active_players(players: list):
 
-        active_players = [player for player in players if
-                          players[player]['active']]
+        active_players = [player for player in players]
         print(f"Active players: {active_players}")
-
-    @staticmethod
-    def get_active_players(players: list):
-
-        active_players = [player
-                          for player in players if players[player]['active']]
-        return active_players
 
 
 class DictExamples:
@@ -37,7 +96,7 @@ class DictExamples:
 
         scores = {}
         for player in players:
-            scores[player] = players[player]['score']
+            scores[player] = players[player]['total_score']
         print(f"Player scores: {scores}")
 
     @staticmethod
@@ -50,11 +109,11 @@ class DictExamples:
             }
 
         for player in players:
-            if players[player]['score'] >= 2000:
+            if players[player]['total_score'] >= 2000:
                 categories['high'] += 1
-            elif 2000 > players[player]['score'] >= 1800:
+            elif 2000 > players[player]['total_score'] >= 1800:
                 categories['medium'] += 1
-            elif players[player]['score'] < 1800:
+            elif players[player]['total_score'] < 1800:
                 categories['low'] += 1
 
         print(f"Score categories: {categories}")
@@ -62,9 +121,9 @@ class DictExamples:
     @staticmethod
     def show_achievements(players: list):
 
-        achievement_count = {}
+        achievement_count = 0
         for player in players:
-            achievement_count[player] = len(players[player]['achievements'])
+            achievement_count += players[player]['achievements_count']
 
         print(f"Achievement counts: {achievement_count}")
 
@@ -76,19 +135,18 @@ class SetExamples:
         unique_players = set(players)
         print(f"Unique players: {unique_players}")
 
-    def show_unique_achievements(players):
+    def show_unique_achievements(data):
 
         unique_achievements = {ach
-                               for player in players
-                               for ach in players[player]['achievements']}
+                               for ach in data['achievements']}
 
         print(f"Unique achievements: {unique_achievements}")
 
-    def show_active_regions(players):
+    def show_gamemodes(data):
 
-        active_regions = {players[player]['region']
-                          for player in players if players[player]['active']}
-        print(f"Active regions: {active_regions}")
+        all_gamemodes = {gamemode
+                         for gamemode in data['game_modes']}
+        print(f"All gamemodes: {all_gamemodes}")
 
 
 class CombinedAnalysis:
@@ -97,17 +155,13 @@ class CombinedAnalysis:
 
         print(f"Total players: {len(players)}")
 
-    def count_unique_achievements(players):
+    def count_unique_achievements(data):
 
-        unique_achievements = {ach
-                               for player in players
-                               for ach in players[player]['achievements']}
-
-        print(f"Total unique achievements: {len(unique_achievements)}")
+        print(f"Total unique achievements: {len(data['achievements'])}")
 
     def average_score(players):
 
-        total_score = sum(players[player]['score'] for player in players)
+        total_score = sum(players[player]['total_score'] for player in players)
         average_score = total_score / len(players)
         print(f"Average score: {average_score}")
 
@@ -116,69 +170,21 @@ class CombinedAnalysis:
         max_score = 0
 
         for player in players:
-            if players[player]['score'] > max_score:
-                max_score = players[player]['score']
+            if players[player]['total_score'] > max_score:
+                max_score = players[player]['total_score']
                 top_performer = player
 
         print(f"Top performer: {top_performer} "
-              f"({players[top_performer]['score']} points, "
-              f"{len(players[top_performer]['achievements'])} achievements)")
+              f"({players[top_performer]['total_score']} points, "
+              f"{players[top_performer]['achievements_count']} achievements)")
 
 
 def main():
 
     print("=== Game Analytics Dashboard ===\n")
-    players = {
-        'alice': {
-            "name": "Alice",
-            "score": 2300,
-            "achievements": {"treasure_hunter", "first_kill", "level_10",
-                             "speed_demon", "perfectionist"},
-            "region": "Spain",
-            "active": True
-        },
-        'bob': {
-            "name": "Bob",
-            "score": 1800,
-            "achievements": {"level_10", "collector", "boss_slayer"},
-            "region": "Portugal",
-            "active": True
-        },
-        'charlie': {
-            "name": "Charlie",
-            "score": 2150,
-            "achievements": {"treasure_hunter", "boss_slayer",
-                             "level_10", "speed_demon"},
-            "region": "Germany",
-            "active": True
-        },
-        'gaster': {
-            "name": "Gaster",
-            "score": 1500,
-            "achievements": {"treasure_hunter", "boss_slayer",
-                             "level_10", "speed_demon"},
-            "region": "France",
-            "active": True
-        },
-        'asgore': {
-            "name": "Asgore",
-            "score": 1750,
-            "achievements": {"treasure_hunter", "boss_slayer",
-                             "level_10", "speed_demon"},
-            "region": "Norway",
-            "active": False
-        },
-        'diana': {
-            "name": "Diana",
-            "score": 2050,
-            "achievements": {"level_10", "collector", "boss_slayer",
-                             "first_kill", "perfectionist", "speed_demon"},
-            "region": "France",
-            "active": False
-        }
-    }
-    ListExamples.get_active_players(players)
+    data = get_data()
     print("=== List Comprehension Examples ===")
+    players = data['players']
     ListExamples.show_high_scorers(players)
     ListExamples.show_double_scores(players)
     ListExamples.show_active_players(players)
@@ -188,11 +194,11 @@ def main():
     DictExamples.show_achievements(players)
     print("\n=== Set Comprehension Examples ===")
     SetExamples.show_unique_players(players)
-    SetExamples.show_unique_achievements(players)
-    SetExamples.show_active_regions(players)
+    SetExamples.show_unique_achievements(data)
+    SetExamples.show_gamemodes(data)
     print("\n=== Combined Analysis ===")
     CombinedAnalysis.count_total_players(players)
-    CombinedAnalysis.count_unique_achievements(players)
+    CombinedAnalysis.count_unique_achievements(data)
     CombinedAnalysis.average_score(players)
     CombinedAnalysis.top_performer(players)
 
